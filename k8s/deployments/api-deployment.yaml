@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pollutrack-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pollutrack-api
+  template:
+    metadata:
+      labels:
+        app: pollutrack-api
+      annotations:
+        ad.datadoghq.com/pollutrack-api.logs: '[{"source": "python", "service": "pollutrack-api"}]'
+        ad.datadoghq.com/pollutrack-api.checks: |
+          {
+            "openmetrics": {
+              "init_config": {},
+              "instances": [{"openmetrics_endpoint": "http://%%host%%:8000/metrics"}]
+            }
+          }
+    spec:
+      containers:
+      - name: pollutrack-api
+        image: lucasfep/pollutrack-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DD_ENV
+          value: "development"
+        - name: DD_SERVICE
+          value: "pollutrack-api"
+        - name: DD_VERSION
+          value: "1.0"
+        - name: DD_LOGS_INJECTION
+          value: "true"
+        - name: DD_TRACE_SAMPLE_RATE
+          value: "1"
+        - name: DD_PROFILING_ENABLED
+          value: "true"
+        - name: DD_SITE
+          value: "us5.datadoghq.com"
+        - name: DD_APM_DD_URL
+          value: "https://trace.agent.us5.datadoghq.com"
+        - name: DD_AGENT_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        livenessProbe:
+          httpGet:
+            path: /api/v1/airquality
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/airquality
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10

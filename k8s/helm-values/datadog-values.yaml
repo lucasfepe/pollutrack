@@ -1,0 +1,18 @@
+datadog:
+  apiKey: 0c7122579e48fed3a69d7bb6ee5cb0e1
+  site: us5.datadoghq.com
+  logs:
+    enabled: true
+    containerCollectAll: true
+  apm:
+    enabled: true
+    env: development
+  processAgent:
+    enabled: true
+  prometheusScrape:
+    enabled: true
+agents:
+  containerLogs:
+    enabled: true
+clusterAgent:
+  enabled: true

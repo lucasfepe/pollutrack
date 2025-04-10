@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datadog-prometheus-scrape
+  namespace: default
+  labels:
+    app: datadog
+data:
+  openmetrics.yaml: |
+    instances:
+      - prometheus_url: http://pollutrack-api:8000/metrics
+        namespace: "pollutrack"
+        metrics:
+          - "*"

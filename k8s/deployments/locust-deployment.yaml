@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pollutrack-locust
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pollutrack-locust
+  template:
+    metadata:
+      labels:
+        app: pollutrack-locust
+    spec:
+      containers:
+      - name: locust
+        image: lucasfep/pollutrack-locust:latest  # Replace with your Docker Hub username
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8089
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pollutrack-locust
+spec:
+  selector:
+    app: pollutrack-locust
+  ports:
+  - port: 8089
+    targetPort: 8089
+  type: NodePort
